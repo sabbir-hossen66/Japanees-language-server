@@ -30,6 +30,12 @@ async function run() {
 
     const languageCollection = client.db('languageDB').collection('language')
 
+    app.get('/lesson', async (req, res) => {
+      const cursor = languageCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
     app.post('/lesson', async (req, res) => {
       const newLesson = req.body;
       console.log(newLesson)
