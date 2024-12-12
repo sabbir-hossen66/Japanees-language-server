@@ -29,6 +29,7 @@ async function run() {
     await client.connect();
 
     const languageCollection = client.db('languageDB').collection('language')
+    const vocabularyCollection = client.db('languageDB').collection('voca')
 
     app.get('/lesson', async (req, res) => {
       const cursor = languageCollection.find();
@@ -78,17 +79,17 @@ async function run() {
       res.send(result)
     })
 
-    // app.get('/create-vocabulary', async (req, res) => {
-    //   const cursor = languageCollection.find();
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // })
+    app.get('/get-vocabulary', async (req, res) => {
+      const cursor = vocabularyCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
 
     app.post('/create-vocabulary', async (req, res) => {
       const newLesson = req.body;
       console.log(newLesson)
-      const result = await languageCollection.insertOne(newLesson);
+      const result = await vocabularyCollection.insertOne(newLesson);
       res.send(result)
     })
 
