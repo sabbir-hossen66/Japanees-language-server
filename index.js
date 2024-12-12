@@ -36,6 +36,41 @@ async function run() {
       res.send(result);
     })
 
+
+    // for update api
+    app.get('/lesson/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await languageCollection.findOne(query);
+      res.send(result)
+    })
+
+    // app.put('/lesson/:id', async (req, res) => {
+    //   const id = req.params.id;
+    //   const filter = { _id: new ObjectId(id) }
+    //   const options = { upsert: true };
+    //   const updatedLesson = req.body
+    //   const lesson = {
+    //     $set: {
+    //       lessonName: updatedLesson.lessonName,
+    //       lessonNumber: updatedLesson.lessonNumber
+    //     }
+    //   }
+    //   const result = await languageCollection.updateOne(filter, lesson, options);
+    //   res.send(result)
+    // })
+
+    app.put('/lesson/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedLesson = req.body;
+
+      const options = { new: true }; // Return the updated document
+      const result = await languageCollection.findOneAndUpdate(filter, updatedLesson, options);
+
+      res.send(result);
+    });
+
     app.post('/lesson', async (req, res) => {
       const newLesson = req.body;
       console.log(newLesson)
@@ -43,6 +78,19 @@ async function run() {
       res.send(result)
     })
 
+    // app.get('/create-vocabulary', async (req, res) => {
+    //   const cursor = languageCollection.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // })
+
+
+    app.post('/create-vocabulary', async (req, res) => {
+      const newLesson = req.body;
+      console.log(newLesson)
+      const result = await languageCollection.insertOne(newLesson);
+      res.send(result)
+    })
 
     app.delete('/lesson/:id', async (req, res) => {
       const id = req.params.id;
