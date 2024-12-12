@@ -7,8 +7,9 @@ const app = express();
 const port = process.env.PORT || 8000;
 
 //here is middleware
-app.use(cors());
+app.use(cors("*"));
 app.use(express.json());
+
 
 
 
@@ -72,7 +73,7 @@ async function run() {
     }
 
     //user related apies
-    app.get('/users', verifyToken, async (req, res) => {
+    app.get('/users', async (req, res) => {
       console.log(req.headers)
       const result = await userCollection.find().toArray();
       res.send(result);
