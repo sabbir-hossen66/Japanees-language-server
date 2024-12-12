@@ -73,7 +73,7 @@ async function run() {
     }
 
     //user related apies
-    app.get('/users', async (req, res) => {
+    app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
       console.log(req.headers)
       const result = await userCollection.find().toArray();
       res.send(result);
@@ -146,31 +146,28 @@ async function run() {
       res.send(result)
     })
 
-    // app.put('/lesson/:id', async (req, res) => {
-    //   const id = req.params.id;
-    //   const filter = { _id: new ObjectId(id) }
-    //   const options = { upsert: true };
-    //   const updatedLesson = req.body
-    //   const lesson = {
-    //     $set: {
-    //       lessonName: updatedLesson.lessonName,
-    //       lessonNumber: updatedLesson.lessonNumber
-    //     }
-    //   }
-    //   const result = await languageCollection.updateOne(filter, lesson, options);
-    //   res.send(result)
-    // })
 
-    app.put('/lesson/:id', async (req, res) => {
+    app.patch('/lesson/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
-      const updatedLesson = req.body;
 
-      const options = { new: true }; // Return the updated document
-      const result = await languageCollection.findOneAndUpdate(filter, updatedLesson, options);
+      try {
+        const filter = { _id: new ObjectId(id) };
+        const updatedLesson = { $set: req.body };
 
-      res.send(result);
+        const result = await languageCollection.updateOne(filter, updatedLesson);
+
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ message: 'Lesson not found' });
+        }
+
+        res.send({ message: 'Lesson updated successfully' });
+      } catch (error) {
+        console.error('Error updating lesson:', error);
+        res.status(500).send({ message: 'An error occurred while updating the lesson' });
+      }
     });
+
+
 
     app.post('/lesson', async (req, res) => {
       const newLesson = req.body;
